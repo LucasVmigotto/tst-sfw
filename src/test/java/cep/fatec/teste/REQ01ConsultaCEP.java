@@ -27,6 +27,7 @@ public class REQ01ConsultaCEP {
   private WebDriver driver;
   private Map<String, Object> vars;
   JavascriptExecutor js;
+  
   @Before
   public void setUp() {
 	System.setProperty("webdriver.chrome.driver", "browserDriver/chromedriver.exe");
@@ -34,31 +35,134 @@ public class REQ01ConsultaCEP {
     js = (JavascriptExecutor) driver;
     vars = new HashMap<String, Object>();
   }
+  
   @After
   public void tearDown() {
     driver.quit();
   }
+  
   @Test
-  public void cT01ConsultaCEPComSucesso() {
+  public void cT01ConsultaCEPComSucesso () {
     driver.get("http://www.buscacep.correios.com.br/sistemas/buscacep/buscaCep.cfm");
     driver.manage().window().setSize(new Dimension(1003, 681));
     driver.findElement(By.name("UF")).click();
+    
     {
       WebElement dropdown = driver.findElement(By.name("UF"));
       dropdown.findElement(By.xpath("//option[. = 'SP']")).click();
     }
+    
     driver.findElement(By.name("UF")).click();
     driver.findElement(By.name("Localidade")).click();
     driver.findElement(By.name("Localidade")).sendKeys("S�o Paulo");
     driver.findElement(By.name("Tipo")).click();
+    
     {
       WebElement dropdown = driver.findElement(By.name("Tipo"));
       dropdown.findElement(By.xpath("//option[. = 'Rua']")).click();
     }
+    
     driver.findElement(By.name("Tipo")).click();
     driver.findElement(By.name("Logradouro")).click();
     driver.findElement(By.name("Logradouro")).sendKeys("Frei Jo�o");
     driver.findElement(By.cssSelector(".btn2")).click();
-    assertThat(driver.findElement(By.cssSelector("p")).getText(), is("1DADOS ENCONTRADOS COM SUCESSO."));
+    
+    assertThat(driver.findElement(By.cssSelector("p")).getText(), is("DADOS ENCONTRADOS COM SUCESSO."));
+  }
+
+  @Test
+  public void CT02ConsultacomLogradouroInvalido () {
+    driver.get("http://www.buscacep.correios.com.br/sistemas/buscacep/buscaCep.cfm");
+    driver.manage().window().setSize(new Dimension(1366, 741));
+    
+    {
+      WebElement element = driver.findElement(By.name("UF"));
+      Actions builder = new Actions(driver);
+      builder.moveToElement(element).clickAndHold().perform();
+    }
+    
+    {
+      WebElement element = driver.findElement(By.name("UF"));
+      Actions builder = new Actions(driver);
+      builder.moveToElement(element).perform();
+    }
+    
+    {
+      WebElement element = driver.findElement(By.name("UF"));
+      Actions builder = new Actions(driver);
+      builder.moveToElement(element).release().perform();
+    }
+    
+    driver.findElement(By.name("UF")).click();
+    driver.findElement(By.name("Localidade")).click();
+    driver.findElement(By.name("Logradouro")).click();
+    driver.findElement(By.cssSelector(".contentform")).click();
+    driver.findElement(By.cssSelector(".btn2")).click();
+    driver.findElement(By.cssSelector("p")).click();
+    
+    assertThat(driver.findElement(By.cssSelector("p")).getText(), is("LOGRADOURO NAO ENCONTRADO."));
+  }
+
+  @Test
+  public void CT04ConsultaCEPcomLogradouroEmBranco () {
+    driver.get("http://www.buscacep.correios.com.br/sistemas/buscacep/buscaCep.cfm");
+    driver.manage().window().setSize(new Dimension(1366, 741));
+    {
+      WebElement dropdown = driver.findElement(By.name("UF"));
+      dropdown.findElement(By.xpath("//option[. = 'SP']")).click();
+    }
+    {
+      WebElement element = driver.findElement(By.name("UF"));
+      Actions builder = new Actions(driver);
+      builder.moveToElement(element).clickAndHold().perform();
+    }
+    {
+      WebElement element = driver.findElement(By.name("UF"));
+      Actions builder = new Actions(driver);
+      builder.moveToElement(element).perform();
+    }
+    {
+      WebElement element = driver.findElement(By.name("UF"));
+      Actions builder = new Actions(driver);
+      builder.moveToElement(element).release().perform();
+    }
+    driver.findElement(By.name("UF")).click();
+    driver.findElement(By.name("Localidade")).click();
+    driver.findElement(By.name("Localidade")).sendKeys("São Paulo");
+    driver.findElement(By.cssSelector(".btn2")).click();
+    assertThat(driver.switchTo().alert().getText(), is("Informe o logradouro !"));
+  }
+
+  @Test
+  public void CT05ConsultaCEPcomLogradouroInvalidoCaracteresEspeciais () {
+    driver.get("http://www.buscacep.correios.com.br/sistemas/buscacep/buscaCep.cfm");
+    driver.manage().window().setSize(new Dimension(1366, 741));
+    
+    {
+      WebElement element = driver.findElement(By.name("UF"));
+      Actions builder = new Actions(driver);
+      builder.moveToElement(element).clickAndHold().perform();
+    }
+    
+    {
+      WebElement element = driver.findElement(By.name("UF"));
+      Actions builder = new Actions(driver);
+      builder.moveToElement(element).perform();
+    }
+    
+    {
+      WebElement element = driver.findElement(By.name("UF"));
+      Actions builder = new Actions(driver);
+      builder.moveToElement(element).release().perform();
+    }
+    
+    driver.findElement(By.name("UF")).click();
+    driver.findElement(By.cssSelector(".column2")).click();
+    driver.findElement(By.cssSelector(".contentform")).click();
+    driver.findElement(By.name("Logradouro")).sendKeys("@#$@#$");
+    driver.findElement(By.cssSelector(".btn2")).click();
+    driver.findElement(By.cssSelector("p")).click();
+    
+    assertThat(driver.findElement(By.cssSelector("p")).getText(), is("LOGRADOURO NAO INFORMADO/INVALIDO"));
   }
 }
