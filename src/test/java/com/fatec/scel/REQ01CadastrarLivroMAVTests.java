@@ -15,12 +15,6 @@ import org.springframework.test.web.servlet.result.ViewResultMatchers;
 class REQ01CadastrarLivroMAVTests {
 
     @Autowired MockMvc mockMvc;
-    
-    @Test
-    public void status () throws Exception {
-        ResultActions resultActions = mockMvc.perform(MockMvcRequestBuilders.get("/livros/cadastrar"));
-        resultActions.andExpect(MockMvcResultMatchers.status().isOk());
-    }
 
     @Test
     public void ct01_quando_seleciona_cadastrar_livro_retorna_200 () throws Exception {
