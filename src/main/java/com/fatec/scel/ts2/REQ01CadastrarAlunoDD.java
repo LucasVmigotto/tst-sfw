@@ -45,9 +45,11 @@ class REQ01CadastrarAlunoDD {
     public void cadastrarAluno() throws Exception {
         int linha = 1;
         while (!ManipulaExcel.getCellData(linha, 0).equals("final".trim())) {
-            System.out.println("linha ==> " + linha);
+            logger.info("==============> linha = " + linha);
+            pageMenu = new PageMenu(driver);
+            driver.get("http://localhost:8080/");
+            pageMenu.click_na_opcao_cadastrarAlunos();
             pageCadastrarAluno = new PageCadastrarAluno(driver);
-            driver.get("http://localhost:8080/alunos/cadastrar");
             try {
                 pageCadastrarAluno.cadastrar(
                     ManipulaExcel.getCellData(linha, 0),
@@ -56,9 +58,10 @@ class REQ01CadastrarAlunoDD {
                     ManipulaExcel.getCellData(linha, 3)
                     ManipulaExcel.getCellData(linha, 4)
                 );
-                assertEquals(ManipulaExcel.getCellData(linha, 5), pageCadastrarAluno.getMessageText());
-            } catch (Exception e) {
-                fail("Erro nao esperado - " + e.getMessage());
+                assertEquals(ManipulaExcel
+                    .getCellData(linha, 5), pageCadastrarAluno.getMessageText());
+                } catch (Exception e) {
+                fail("Erro não esperado - " + e.getMessage());
                 System.out.println(e.getMessage());
             }
             linha = linha + 1;
